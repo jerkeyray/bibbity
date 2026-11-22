@@ -1,0 +1,1 @@
+Write a C++ function that returns the index of the largest element in a std::vector<float>. Keep it short.

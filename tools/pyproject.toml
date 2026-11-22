@@ -1,0 +1,15 @@
+[project]
+name = "bibbity-tools"
+version = "0.1.0"
+description = "Python tooling for bibbity: weight inspection, tokenization, golden dumps"
+requires-python = ">=3.11"
+dependencies = [
+  "torch>=2.6",
+  "transformers>=4.57",
+  "safetensors>=0.4",
+  "numpy>=2.0",
+  "huggingface_hub[cli]>=0.30",
+]
+
+[tool.uv]
+package = false

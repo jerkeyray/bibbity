@@ -1,0 +1,17 @@
+A memory hierarchy exists because fast storage is small and large storage is slow. Registers hold a handful of values and answer in a single cycle. The first-level cache holds tens of kilobytes and answers in a few cycles. The second-level cache is larger and slower, and main memory is larger and slower still. Every level trades capacity for latency, and a program runs fast only when the data it needs next is already close to the core that needs it.
+
+Bandwidth and latency are different limits. Latency is how long one request takes to come back. Bandwidth is how many bytes per second can arrive when many requests are in flight at once. A single core can keep only a limited number of requests outstanding, so one thread usually cannot saturate the memory system by itself; several cores streaming together can.
+
+A matrix-vector product reads every weight exactly once and uses it exactly once. Its arithmetic intensity is about two floating-point operations per weight, which is far below what the cores can sustain per byte loaded. That makes it bandwidth-bound: the time it takes is roughly the number of bytes read divided by the memory bandwidth, no matter how clever the arithmetic is.
+
+A matrix-matrix product is different. When many input vectors share the same weights, each weight loaded from memory can be reused for every vector before it is evicted. With enough reuse the computation stops waiting on memory and starts waiting on the arithmetic units instead. The point where the two limits meet is called the ridge point of the roofline model.
+
+Language model inference has both shapes. Processing a prompt multiplies the weights by many tokens at once, which is a matrix-matrix product and can approach the compute ceiling. Generating text one token at a time multiplies the weights by a single vector, which is a matrix-vector product and is limited by how fast the weights can be streamed from memory.
+
+Attention adds a second kind of memory traffic. Each generated token must read the keys and values of every earlier token, so the cost of a step grows with the length of the context. A recurrent layer avoids that growth by compressing the past into a fixed-size state, which it updates once per token and reads once per token, whatever the context length.
+
+Hybrid models mix the two. Most of their layers are recurrent and carry a fixed-size state, while a few layers are full attention and keep a growing cache. The recurrent layers make long contexts cheap, and the attention layers keep the ability to look up exact earlier tokens when it matters.
+
+Caching a shared prefix is easy for attention: the keys and values for the first thousand tokens are the same whatever comes after them, so they can be stored once and reused. A recurrent state is harder to share, because it only exists at the positions where it was saved. Reusing a prefix means finding the latest saved state inside it and recomputing from there.
+
+Using only the passage above, explain in three sentences why generating text one token at a time is limited by memory bandwidth, and how a recurrent layer changes the cost of long contexts.

@@ -1,0 +1,10 @@
+temp_docs
+/build/
+.venv/
+/models/
+/golden/
+*.npy
+.DS_Store
+__pycache__/
+.cache/
+CLAUDE.md
