@@ -1,5 +1,6 @@
 #include <arm_neon.h>
 #include <benchmark/benchmark.h>
+#include <pthread/qos.h>
 
 #include <cstddef>
 #include <cstdint>
@@ -72,8 +73,15 @@ void BM_ReadBandwidth8(benchmark::State& state) {
 // 16 sums as 4 explicit NEON registers (4 floats each): 4 independent fadd.4s chains.
 // Written with intrinsics because the compiler won't reliably vectorize a float[16]
 // accumulator array: it kept 16 scalar sums instead and ran at the 8-sum speed.
+//
+// Multithreaded with ->Threads(t): every thread runs this function at the same time,
+// on its own buffer of range(0) / t bytes, so the total read stays range(0).
 void BM_ReadBandwidth16(benchmark::State& state) {
-    const auto n_bytes = static_cast<std::size_t>(state.range(0));
+    // Mark the thread urgent so macOS prefers P-cores (it can't be pinned to a core).
+    pthread_set_qos_class_self_np(QOS_CLASS_USER_INTERACTIVE, 0);
+
+    const auto n_bytes =
+        static_cast<std::size_t>(state.range(0)) / static_cast<std::size_t>(state.threads());
     const std::size_t n = n_bytes / sizeof(float);
 
     std::vector<float> buf(n, 1.0f);
@@ -94,7 +102,10 @@ void BM_ReadBandwidth16(benchmark::State& state) {
         benchmark::DoNotOptimize(vaddvq_f32(total));
     }
 
-    state.SetBytesProcessed(state.iterations() * static_cast<std::int64_t>(n_bytes));
+    // Google Benchmark (1.9.1) sums every thread's wall time, so with t threads the rate
+    // is divided by t. Scaling the bytes by t cancels that and reports machine bandwidth.
+    state.SetBytesProcessed(state.iterations() * static_cast<std::int64_t>(n_bytes) *
+                            state.threads());
 }
 
 }  // namespace
@@ -117,4 +128,19 @@ BENCHMARK(BM_ReadBandwidth8)
 BENCHMARK(BM_ReadBandwidth16)
     ->Arg(64 << 10)
     ->Arg(std::int64_t{1} << 30)
+    ->Unit(benchmark::kMicrosecond);
+
+// Thread sweep: 1 GiB total, split across threads. 4 = the P-cores, 10 = every core.
+// UseRealTime: bandwidth of the whole machine is bytes / wall-clock time.
+BENCHMARK(BM_ReadBandwidth16)
+    ->Name("BM_ReadBandwidth16_MT")
+    ->Arg(std::int64_t{1} << 30)
+    ->Threads(1)
+    ->Threads(2)
+    ->Threads(3)
+    ->Threads(4)
+    ->Threads(6)
+    ->Threads(8)
+    ->Threads(10)
+    ->UseRealTime()
     ->Unit(benchmark::kMicrosecond);
