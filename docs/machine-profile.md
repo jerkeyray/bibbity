@@ -24,7 +24,7 @@ The ceilings every number in bibbity is judged against (PR-1). Static fields com
 | Field | Source | Value |
 | --- | --- | --- |
 | Spec memory bandwidth | Apple | 153 GB/s |
-| Measured bandwidth: 1 thread / P-cores / all cores | M0 bandwidth bench |  |
+| Measured bandwidth: 1 thread / P-cores / all cores | M0 bandwidth bench | 64 GiB/s (69 GB/s) / — / — |
 | Measured NEON fp32 peak: 1 P-core / all P-cores | M0 FMA bench |  |
 | Ridge point (peak FLOP/s ÷ bandwidth) | computed |  |
 | L1 / L2 / SLC cliffs from bandwidth-vs-size | M0 sweep |  |
