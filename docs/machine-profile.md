@@ -17,7 +17,7 @@ The ceilings every number in bibbity is judged against (PR-1). Static fields com
 | FP16 arithmetic | `sysctl hw.optional.arm.FEAT_FP16` | yes |
 | SME / SME2 | `sysctl hw.optional.arm.FEAT_SME hw.optional.arm.FEAT_SME2` | yes / yes |
 | OS | `sw_vers` | macOS 27.2.1 (26B131) |
-| Compiler | `clang++ --version` | Apple clang version 17.0.0 (clang-1700.6.3.2) |
+| Compiler | `clang++ --version` | Apple clang version 21.0.0 (clang-2100.4.1.1) |
 
 ## Measured (M0)
 

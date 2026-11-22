@@ -16,7 +16,7 @@ GoogleTest v1.15.2 and Google Benchmark v1.9.1 are fetched and pinned (URL + SHA
 
 ```bash
 cmake --workflow --preset debug      # -O0 -g, ASan + UBSan; configure + build + test
-cmake --workflow --preset release    # -O3 -mcpu=apple-m4; configure + build + test
+cmake --workflow --preset release    # -O3 -mcpu=apple-m5; configure + build + test
 cmake --workflow --preset tsan       # ThreadSanitizer build + test
 cmake --preset profile && cmake --build --preset profile   # release + -g for Instruments
 ./build/release/bench/bibbity_bench  # all benchmarks (--benchmark_filter=... to narrow)
@@ -29,16 +29,9 @@ scripts/leaks.sh                     # tests under `leaks --atExit` (release bui
 - Vectorization remarks: `cmake --preset release -DBIBBITY_VEC_REPORT=ON`.
 - Different target CPU: `-DBIBBITY_MCPU=...`.
 
-### Known issue: ASan and TSan on macOS 27.2 + CLT clang 17
+### Toolchain updates
 
-On this machine (macOS 27.2.1, Apple clang 1700.6.3.2 from the Command Line Tools), a hello world built with `-fsanitize=address` hangs at startup at 100% CPU, and `-fsanitize=thread` segfaults. UBSan works. So the `debug` and `tsan` workflows can't pass yet; `release` passes and `leaks` reports 0 leaks.
-
-Things to try, in order:
-1. Install full Xcode (needed for Instruments anyway) and `sudo xcode-select -s /Applications/Xcode.app`. Its toolchain may ship a sanitizer runtime that matches the OS.
-2. Update the Command Line Tools (`softwareupdate --list`).
-3. Homebrew LLVM (`brew install llvm`) and configure with `-DCMAKE_CXX_COMPILER=$(brew --prefix llvm)/bin/clang++`.
-
-Repro: `printf '#include <cstdio>\nint main(){std::puts("hi");}\n' > a.cpp && clang++ -fsanitize=address a.cpp -o a && ./a`
+After the Command Line Tools update, delete `build/` (or configure with `--fresh`). Old build dirs keep the old clang's sanitizer runtime path, and ASan binaries then fail with `Library not loaded: libclang_rt.asan_osx_dynamic.dylib`. (Clang 17 on macOS 27.2 also had ASan hanging and TSan crashing; clang 21 fixed both.)
 
 ## Python tooling
 

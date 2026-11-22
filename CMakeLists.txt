@@ -9,9 +9,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # ---------------------------------------------------------------------------
 # Options
 # ---------------------------------------------------------------------------
-# Apple clang 17 resolves -mcpu=native to apple-m3 (it predates the M5).
-# apple-m4 is the newest target it knows; override with -DBIBBITY_MCPU=...
-set(BIBBITY_MCPU "apple-m4" CACHE STRING "Value passed to -mcpu for optimized builds")
+# Apple clang 21 resolves -mcpu=native to apple-m4 on the M5, so name the chip explicitly.
+# Override with -DBIBBITY_MCPU=...
+set(BIBBITY_MCPU "apple-m5" CACHE STRING "Value passed to -mcpu for optimized builds")
 set(BIBBITY_SANITIZE "" CACHE STRING "Sanitizers: '', 'address,undefined', or 'thread'")
 option(BIBBITY_VEC_REPORT "Emit loop-vectorizer remarks" OFF)
 option(BIBBITY_BUILD_TESTS "Build tests" ON)
