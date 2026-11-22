@@ -12,7 +12,7 @@ tests/      *_test.cpp → bibbity_tests (unit, golden, property, allocation)
 bench/      *_bench.cpp → bibbity_bench (micro, e2e)
 tools/      Python (uv): inspect_weights, tokenize_prompt, golden_dump, prompts/
 scripts/    machine_profile.sh, leaks.sh
-docs/       setup, machine profile, design notes
+docs/       setup, machine profile, design/, notes/logs/ (learning log)
 models/     downloaded checkpoint (gitignored)
 golden/     reference dumps (gitignored)
 temp_docs/  private working notes (gitignored)

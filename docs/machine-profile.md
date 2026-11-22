@@ -1,6 +1,6 @@
 # Machine profile
 
-The ceilings every number in bibbity is judged against (PR-1). Static fields come from `scripts/machine_profile.sh` (generated 2026-11-21); measured fields are filled at M0.
+The ceilings every number in bibbity is judged against (PR-1). Static fields come from `scripts/machine_profile.sh` (generated 2026-11-22); measured fields are filled at M0.
 
 | Field | Command | Value |
 | --- | --- | --- |
