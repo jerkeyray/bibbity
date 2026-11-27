@@ -109,5 +109,8 @@ if(BIBBITY_BUILD_BENCH)
   file(GLOB_RECURSE BIBBITY_BENCH_SOURCES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/bench/*_bench.cpp)
   add_executable(bibbity_bench ${BIBBITY_BENCH_SOURCES})
   target_link_libraries(bibbity_bench PRIVATE bibbity_core benchmark::benchmark_main)
+  # Apple clang's machine outliner pulls repeated instruction runs out into OUTLINED_FUNCTION_*
+  # helpers, even at -O3. Inside a hot loop that adds a call/return per pass (seen in the FMA bench).
+  target_compile_options(bibbity_bench PRIVATE $<$<NOT:$<CONFIG:Debug>>:-mno-outline>)
   set_target_properties(bibbity_bench PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bench)
 endif()
